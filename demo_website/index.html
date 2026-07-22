@@ -5,142 +5,229 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHARMVERS AIOS Control Tower</title>
     <link rel="stylesheet" href="index.css">
-    <!-- Chart.js CDN for interactive graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div id="app-container">
-        <!-- Top Navigation Header -->
-        <header>
-            <div class="logo-area">
-                <span class="logo-icon">🧬</span>
-                <div class="logo-text">
-                    <h1>PHARMVERS AIOS</h1>
-                    <p class="status-indicator">SYSTEM CONTROL STATUS: ACTIVE // GxP SECURED</p>
-                </div>
-            </div>
-            
-            <!-- Mode Switcher -->
-            <div class="mode-switcher">
-                <button class="mode-btn active" id="mode-mfg" onclick="switchMode('mfg')">Manufacturing (RTRT)</button>
-                <button class="mode-btn" id="mode-clin" onclick="switchMode('clin')">Clinical Trials (SCA)</button>
-            </div>
+<div id="app-container">
 
-            <!-- Header Metrics -->
-            <div class="header-metrics">
-                <div class="metric-card-mini">
-                    <span class="m-label">OODA TARGET LATENCY</span>
-                    <span class="m-value cyan-text">42 ms</span>
-                </div>
-                <div class="metric-card-mini">
-                    <span class="m-label">GxP STATUS</span>
-                    <span class="m-value green-text">VALIDATED</span>
-                </div>
+    <!-- ═══════════════════════════════════════════════════════════
+         TOP HEADER
+    ═══════════════════════════════════════════════════════════ -->
+    <header>
+        <div class="logo-area">
+            <span class="logo-icon">🧬</span>
+            <div class="logo-text">
+                <h1>PHARMVERS AIOS</h1>
+                <p class="status-indicator">GxP SECURED // AUTONOMOUS INTELLIGENCE ACTIVE // OODA LATENCY: 42ms</p>
             </div>
-        </header>
+        </div>
+        <div class="mode-switcher">
+            <button class="mode-btn active" id="mode-analytics" onclick="switchView('analytics')">Analytics</button>
+            <button class="mode-btn" id="mode-runner" onclick="switchView('runner')">Test Runner</button>
+        </div>
+        <div class="header-metrics">
+            <div class="metric-card-mini">
+                <span class="m-label">GxP STATUS</span>
+                <span class="m-value green-text">VALIDATED</span>
+            </div>
+            <div class="metric-card-mini">
+                <span class="m-label">ACTIVE MODE</span>
+                <span id="active-mode-label" class="m-value cyan-text">ANALYTICS</span>
+            </div>
+        </div>
+    </header>
 
-        <!-- Main Dashboard Workspace -->
+    <!-- ═══════════════════════════════════════════════════════════
+         VIEW 1: ANALYTICS DASHBOARD
+    ═══════════════════════════════════════════════════════════ -->
+    <div id="view-analytics" class="view-container active">
         <main class="dashboard-grid">
-            <!-- Left Panel: Live Interactive Graphs -->
+            <!-- Left: Charts -->
             <section class="left-panel">
-                <!-- MANUFACTURING VIEW CHARTS -->
-                <div id="mfg-charts" class="view-panel active">
+                <div id="mfg-charts" class="mode-view active">
                     <div class="card chart-card">
                         <h2>BLEND ASSAY UNIFORMITY TIMELINE (CQA TARGET: 100%)</h2>
-                        <div class="chart-container">
-                            <canvas id="mfg-assay-chart"></canvas>
-                        </div>
+                        <div class="chart-container"><canvas id="mfg-assay-chart"></canvas></div>
                     </div>
-                    <div class="card chart-card mt-16">
-                        <h2>MULTIVARIATE QUALITY RELEASE (HOTELLING T² BOUNDARY: 5.991)</h2>
-                        <div class="chart-container">
-                            <canvas id="mfg-t2-chart"></canvas>
-                        </div>
+                    <div class="card chart-card" style="margin-top:12px;">
+                        <h2>MULTIVARIATE QUALITY RELEASE — HOTELLING T² (LIMIT: 5.991)</h2>
+                        <div class="chart-container"><canvas id="mfg-t2-chart"></canvas></div>
                     </div>
                 </div>
-
-                <!-- CLINICAL TRIAL VIEW CHARTS -->
-                <div id="clin-charts" class="view-panel">
+                <div id="clin-charts" class="mode-view">
                     <div class="card chart-card">
-                        <h2>KAPLAN-MEIER EFFICACY ESTIMATION (ACTIVE TREATMENT VS. SYNTHETIC CONTROL)</h2>
-                        <div class="chart-container">
-                            <canvas id="clin-km-chart"></canvas>
-                        </div>
+                        <h2>KAPLAN-MEIER EFFICACY — ACTIVE TREATMENT VS SYNTHETIC CONTROL</h2>
+                        <div class="chart-container"><canvas id="clin-km-chart"></canvas></div>
                     </div>
-                    <div class="card chart-card mt-16">
-                        <h2>COVARIATE BALANCE MATCHING (NEAREST NEIGHBOR DISTANCE)</h2>
-                        <div class="chart-container">
-                            <canvas id="clin-match-chart"></canvas>
-                        </div>
+                    <div class="card chart-card" style="margin-top:12px;">
+                        <h2>COVARIATE BALANCE — NEAREST-NEIGHBOUR MATCHING DISTANCE</h2>
+                        <div class="chart-container"><canvas id="clin-match-chart"></canvas></div>
                     </div>
                 </div>
             </section>
 
-            <!-- Right Panel: Strategic Impacts & "Why it Matters" -->
+            <!-- Right: Metrics + Explainer -->
             <section class="right-panel">
-                <!-- METRICS CARD -->
                 <div class="card metrics-card">
-                    <h2>COMPILATION METRICS & BUSINESS ROI</h2>
+                    <h2>BUSINESS ROI COMPILATION</h2>
                     <div class="roi-grid">
                         <div class="roi-item">
                             <span class="roi-label">FINANCIAL SAVED</span>
                             <span id="roi-money" class="roi-val green-text">$3.20M</span>
                         </div>
                         <div class="roi-item">
-                            <span class="roi-label">LEAD TIME CHANGE</span>
-                            <span id="roi-time" class="roi-val cyan-text">14d -> 0m</span>
+                            <span class="roi-label">LEAD TIME</span>
+                            <span id="roi-time" class="roi-val cyan-text">14d → 0m</span>
                         </div>
                         <div class="roi-item">
-                            <span class="roi-label">COMPLIANCE STATE</span>
+                            <span class="roi-label">COMPLIANCE</span>
                             <span id="roi-status" class="roi-val green-text">100% GxP</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- WHY IT MATTERS EXPLAINER -->
-                <div class="card explainer-card mt-16">
-                    <h2>WHY THIS MATTERS TO THE EXECUTIVE SUITE</h2>
+                <div class="card explainer-card" style="margin-top:12px; flex:1;">
+                    <h2>WHY THIS MATTERS</h2>
                     <div class="explainer-content">
                         <h3 id="explainer-title">Real-Time Release Testing (RTRT)</h3>
-                        <p id="explainer-body">
-                            Traditional batch manufacturing requires holding raw inventory for 14 days waiting for off-line HPLC quality checks. By monitoring blend uniformity and moisture variables in real time using multivariate T² statistics, we issue an automated release certificate. This releases $3.2M in working capital per facility and prevents drug stockouts at clinical sites.
-                        </p>
+                        <p id="explainer-body">Traditional batch manufacturing requires holding raw inventory for 14 days for off-line HPLC quality checks. By monitoring blend uniformity and moisture in real-time using multivariate T² statistics, we issue an automated release certificate — releasing $3.2M in working capital per facility and preventing drug stockouts at clinical sites.</p>
                     </div>
                 </div>
 
-                <!-- ADJUSTMENT CONTROLLER -->
-                <div class="card controller-card mt-16">
-                    <h2>INJECT CORRIDOR EXCURSIONS</h2>
-                    <div id="mfg-controls" class="control-view active">
-                        <div class="btn-group">
-                            <button class="btn active" id="btn-mfg-normal" onclick="adjustMfg('normal')">Normal (100% Assay)</button>
-                            <button class="btn" id="btn-mfg-drift" onclick="adjustMfg('drift')">Assay Drift (98% Feeder)</button>
-                            <button class="btn" id="btn-mfg-spike" onclick="adjustMfg('spike')">Moisture Spike (4.9%)</button>
-                        </div>
+                <div class="card controller-card" style="margin-top:12px;">
+                    <h2>INJECT SUPPLY CHAIN EXCURSION</h2>
+                    <div class="tab-row">
+                        <button class="tab-btn active" id="tab-mfg" onclick="switchMode('mfg')">Manufacturing</button>
+                        <button class="tab-btn" id="tab-clin" onclick="switchMode('clin')">Clinical</button>
                     </div>
-                    <div id="clin-controls" class="control-view">
-                        <div class="btn-group">
-                            <button class="btn active" id="btn-clin-normal" onclick="adjustClin('normal')">Balanced Sample (N=100)</button>
-                            <button class="btn" id="btn-clin-skew" onclick="adjustClin('skew')">Biomarker Skew (Age > 60)</button>
-                        </div>
+                    <div id="mfg-btns" class="ctrl-btns active">
+                        <button class="btn active" id="btn-mfg-normal" onclick="adjustMfg('normal')">Normal</button>
+                        <button class="btn" id="btn-mfg-drift" onclick="adjustMfg('drift')">Feeder Drift</button>
+                        <button class="btn" id="btn-mfg-spike" onclick="adjustMfg('spike')">Moisture Spike</button>
+                    </div>
+                    <div id="clin-btns" class="ctrl-btns">
+                        <button class="btn active" id="btn-clin-normal" onclick="adjustClin('normal')">Balanced</button>
+                        <button class="btn" id="btn-clin-skew" onclick="adjustClin('skew')">Biomarker Skew</button>
                     </div>
                 </div>
             </section>
         </main>
 
-        <!-- Bottom Panel: Live GxP Validation Compiler -->
-        <footer class="terminal-card">
+        <!-- GxP Compliance Report Footer -->
+        <div class="terminal-strip">
             <div class="terminal-header">
                 <h3>AUTONOMOUS GxP VALIDATION REPORT COMPILER (21 CFR PART 11 / ANNEX 11)</h3>
                 <span class="blink-dot"></span>
             </div>
-            <div class="terminal-body">
+            <div class="terminal-body gxp-body">
                 <pre id="validation-report-pre">Loading GxP Report Compiler...</pre>
             </div>
-        </footer>
+        </div>
     </div>
 
-    <!-- Core Javascript Logic -->
-    <script src="app.js"></script>
+    <!-- ═══════════════════════════════════════════════════════════
+         VIEW 2: TEST RUNNER COMMAND PANEL
+    ═══════════════════════════════════════════════════════════ -->
+    <div id="view-runner" class="view-container">
+        <div class="runner-layout">
+
+            <!-- Left: Command Control Panel -->
+            <div class="runner-left">
+                <div class="card runner-cmd-card">
+                    <h2>ACQUISITION COMMAND TERMINAL</h2>
+
+                    <div class="cmd-section">
+                        <label class="cmd-label">SELECT MODULE</label>
+                        <div class="cmd-module-grid">
+                            <label class="module-check">
+                                <input type="checkbox" id="chk-mfg" checked>
+                                <span>Manufacturing (RTRT)</span>
+                            </label>
+                            <label class="module-check">
+                                <input type="checkbox" id="chk-clin" checked>
+                                <span>Clinical Trials (SCA)</span>
+                            </label>
+                            <label class="module-check">
+                                <input type="checkbox" id="chk-comp" checked>
+                                <span>Compliance (GxP)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="cmd-section">
+                        <label class="cmd-label">ACQUISITION DEPTH</label>
+                        <select id="select-depth" class="cmd-select">
+                            <option value="quick">Quick Scan (3 scenarios)</option>
+                            <option value="standard" selected>Standard Run (8 scenarios)</option>
+                            <option value="full">Full Acquisition (14 scenarios)</option>
+                        </select>
+                    </div>
+
+                    <div class="cmd-section">
+                        <label class="cmd-label">SIGNAL FILTER</label>
+                        <div class="cmd-module-grid">
+                            <label class="module-check">
+                                <input type="checkbox" id="flt-pass" checked>
+                                <span class="green-text">Show PASS</span>
+                            </label>
+                            <label class="module-check">
+                                <input type="checkbox" id="flt-warn" checked>
+                                <span class="amber-text">Show WARN</span>
+                            </label>
+                            <label class="module-check">
+                                <input type="checkbox" id="flt-fail" checked>
+                                <span class="red-text">Show FAIL</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="run-btn" id="run-btn" onclick="runAcquisition()">
+                        ▶ RUN ACQUISITION
+                    </button>
+                    <button class="clear-btn" onclick="clearRunner()">CLEAR OUTPUT</button>
+                </div>
+
+                <!-- Live Summary Scoreboard -->
+                <div class="card runner-score-card" style="margin-top:12px;">
+                    <h2>LIVE SIGNAL SUMMARY</h2>
+                    <div class="score-grid">
+                        <div class="score-item green-border">
+                            <span class="score-num green-text" id="score-pass">0</span>
+                            <span class="score-lbl">PASS</span>
+                        </div>
+                        <div class="score-item amber-border">
+                            <span class="score-num amber-text" id="score-warn">0</span>
+                            <span class="score-lbl">WARN</span>
+                        </div>
+                        <div class="score-item red-border">
+                            <span class="score-num red-text" id="score-fail">0</span>
+                            <span class="score-lbl">FAIL</span>
+                        </div>
+                    </div>
+                    <div class="score-impact">
+                        <span class="m-label">TOTAL FINANCIAL IMPACT PROTECTED</span>
+                        <span class="impact-val green-text" id="impact-val">$0.00M</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Signal Output Stream -->
+            <div class="runner-right card">
+                <div class="runner-output-header">
+                    <h2>SIGNAL OUTPUT STREAM</h2>
+                    <span id="runner-status-badge" class="badge-idle">IDLE</span>
+                </div>
+                <div id="runner-output" class="runner-output">
+                    <div class="runner-placeholder">
+                        Select modules and depth above, then click<br>
+                        <strong>▶ RUN ACQUISITION</strong> to begin.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="app.js"></script>
 </body>
 </html>
