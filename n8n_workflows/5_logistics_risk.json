@@ -1,0 +1,127 @@
+{
+  "name": "PHARMVERS Logistics & Risk Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "webhook-trigger-id",
+      "name": "Webhook Trigger (Logistics Tracker)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 250]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.temperature }}",
+              "operation": "larger",
+              "value2": 8
+            },
+            {
+              "value1": "={{ $json.temperature }}",
+              "operation": "smaller",
+              "value2": 2
+            }
+          ]
+        }
+      },
+      "id": "if-temp-excursion-id",
+      "name": "IF Node (Thermal Excursion Checker)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [300, 250]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.delayMinutes }}",
+              "operation": "larger",
+              "value2": 240
+            }
+          ]
+        }
+      },
+      "id": "if-delay-id",
+      "name": "IF Node (Transit Delay Checker)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [500, 250]
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    alternativeRouteId: \"ALT-RT-04\",\n    carrier: \"DHL Express Cold\",\n    etaOffsetHours: 4,\n    action: \"REROUTE_DISPATCH\"\n  }\n};"
+      },
+      "id": "code-reroute-id",
+      "name": "Code Node (Alternative Route Generator)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [700, 150]
+    },
+    {
+      "parameters": {
+        "url": "https://logistics.dhl.com/v1/reroute",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"routeId\": \"{{ $json.alternativeRouteId }}\",\n  \"action\": \"{{ $json.action }}\"\n}"
+      },
+      "id": "http-carrier-id",
+      "name": "HTTP Request (Update Carrier Dispatch)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [900, 150]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger (Logistics Tracker)": {
+      "main": [
+        [
+          {
+            "node": "IF Node (Thermal Excursion Checker)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Node (Thermal Excursion Checker)": {
+      "main": [
+        [
+          {
+            "node": "IF Node (Transit Delay Checker)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Node (Transit Delay Checker)": {
+      "main": [
+        [
+          {
+            "node": "Code Node (Alternative Route Generator)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Node (Alternative Route Generator)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Update Carrier Dispatch)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "logistics-v1"
+}

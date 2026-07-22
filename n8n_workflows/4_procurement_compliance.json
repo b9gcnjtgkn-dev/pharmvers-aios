@@ -1,0 +1,85 @@
+{
+  "name": "PHARMVERS Procurement & Compliance Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "webhook-trigger-id",
+      "name": "Webhook Trigger (Procure Request)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 250]
+    },
+    {
+      "parameters": {
+        "url": "https://gkg.pharmvers.io/v1/query",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"MATCH (m:Molecule {name: '{{ $json.molecule }}'})<-[:PRODUCES]-(api:API) RETURN api\"\n}"
+      },
+      "id": "http-gkg-query-id",
+      "name": "HTTP Request (Fetch Supplier Catalog)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 250]
+    },
+    {
+      "parameters": {
+        "jsCode": "const basePrice = 0.32;\nconst urgency = $json.urgency || \"WARNING\";\nconst negotiatedPrice = basePrice * (urgency === \"CRITICAL\" ? 0.95 : 0.88);\n\nreturn {\n  json: {\n    selectedSupplierId: \"MFG-88\",\n    contractPrice: negotiatedPrice,\n    quantity: 50000,\n    molecule: $json.molecule || \"Amoxicillin\"\n  }\n};"
+      },
+      "id": "code-nash-solver-id",
+      "name": "Code Node (Nash Bargaining Solver)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [500, 250]
+    },
+    {
+      "parameters": {
+        "workflowId": "Z9iiLbVL01n0oG8s"
+      },
+      "id": "exec-compliance-verifier-id",
+      "name": "Execute Workflow (Compliance Verifier)",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [700, 250]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger (Procure Request)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Fetch Supplier Catalog)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (Fetch Supplier Catalog)": {
+      "main": [
+        [
+          {
+            "node": "Code Node (Nash Bargaining Solver)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Node (Nash Bargaining Solver)": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow (Compliance Verifier)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "procurement-v1"
+}

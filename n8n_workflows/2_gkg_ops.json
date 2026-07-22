@@ -1,0 +1,75 @@
+{
+  "name": "PHARMVERS GKG Operations Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "v1/gkg/ops",
+        "options": {}
+      },
+      "id": "webhook-trigger-id",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 250]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://d60d9fcb.databases.neo4j.io/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "statements",
+              "value": "=[{\"statement\": \"MERGE (s:Entity {name: '{{ $json.subject }}'}) MERGE (o:Entity {name: '{{ $json.object }}'}) MERGE (s)-[:{{ $json.predicate }}]->(o)\"}]"
+            }
+          ]
+        }
+      },
+      "id": "http-neo4j-id",
+      "name": "HTTP Request (Neo4j Write)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [350, 150]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://qdrant-db:6333/collections/gkg_embeddings/points",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"points\": [\n    {\n      \"id\": \"{{ $json.id || $now }}\",\n      \"vector\": [0.15, 0.22, 0.08, 0.91],\n      \"payload\": {\n        \"subject\": \"{{ $json.subject }}\",\n        \"predicate\": \"{{ $json.predicate }}\",\n        \"object\": \"{{ $json.object }}\"\n      }\n    }\n  ]\n}"
+      },
+      "id": "http-qdrant-id",
+      "name": "HTTP Request (Qdrant Vector Write)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [350, 350]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Neo4j Write)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request (Qdrant Vector Write)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "gkg-ops-v1"
+}

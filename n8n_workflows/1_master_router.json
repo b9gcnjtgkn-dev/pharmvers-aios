@@ -1,0 +1,111 @@
+{
+  "name": "PHARMVERS AIOS Master Router",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "v1/acp",
+        "options": {}
+      },
+      "id": "webhook-trigger-id",
+      "name": "Webhook Trigger (ACP Gateway)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 250]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.intent }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "DEMAND_FORECAST"
+            },
+            {
+              "value2": "PROCUREMENT_BID"
+            },
+            {
+              "value2": "LOGISTICS_TRACK"
+            }
+          ]
+        }
+      },
+      "id": "switch-id",
+      "name": "Switch Node (Intent Router)",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [300, 250]
+    },
+    {
+      "parameters": {
+        "workflowId": "vbr2ktv3HJ555Udp"
+      },
+      "id": "exec-forecast-id",
+      "name": "Execute Workflow - Forecast Agent",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [550, 100]
+    },
+    {
+      "parameters": {
+        "workflowId": "PdYjVxpVJjpN2EjC"
+      },
+      "id": "exec-procure-id",
+      "name": "Execute Workflow - Procurement Agent",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [550, 250]
+    },
+    {
+      "parameters": {
+        "workflowId": "ButPcbzdSquLRedY"
+      },
+      "id": "exec-logistics-id",
+      "name": "Execute Workflow - Logistics Agent",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [550, 400]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger (ACP Gateway)": {
+      "main": [
+        [
+          {
+            "node": "Switch Node (Intent Router)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Node (Intent Router)": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow - Forecast Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Workflow - Procurement Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Workflow - Logistics Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "master-router-v1"
+}
