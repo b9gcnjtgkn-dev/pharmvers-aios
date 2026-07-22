@@ -17,6 +17,11 @@ Run with: python3 demo_runner.py
 import math
 import random
 import datetime
+import functools
+
+# Force unbuffered stdout — results stream instantly to terminal
+print = functools.partial(print, flush=True)
+
 from pharmvers_core.rtrt_engine import BioreactorPATController
 from pharmvers_core.clinops_engine import SyntheticTrialSimulator
 from pharmvers_core.compliance_compiler import RegulatoryVerificationCompiler

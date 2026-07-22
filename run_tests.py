@@ -1,5 +1,9 @@
 import os
 import sys
+import functools
+
+# Force unbuffered stdout so test results print instantly
+print = functools.partial(print, flush=True)
 
 # Add pharmvers_core folder to Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), "pharmvers_core"))
